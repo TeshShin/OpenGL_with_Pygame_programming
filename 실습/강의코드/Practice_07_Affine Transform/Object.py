@@ -31,15 +31,15 @@ class Object:
                 scale = c.get_scale()
                 rot_angle = c.get_rotation_angle()
                 rot_axis = c.get_rotation_axis()
-
+            # 카메라를 중심으로 오브젝트가 빙빙돈다.
             # Testing Transformation Order 
-                # glRotated(rot_angle, rot_axis.x, rot_axis.y, rot_axis.z)
-                # glTranslatef(pos.x, pos.y, pos.z)
-                # glScalef(scale.x, scale.y, scale.z)
-
-                glTranslatef(pos.x, pos.y, pos.z)
                 glRotated(rot_angle, rot_axis.x, rot_axis.y, rot_axis.z)
+                glTranslatef(pos.x, pos.y, pos.z)
                 glScalef(scale.x, scale.y, scale.z)
+            # 아래 주석은 오브젝트가 제자리서 회전한다.
+                # glTranslatef(pos.x, pos.y, pos.z)
+                # glRotated(rot_angle, rot_axis.x, rot_axis.y, rot_axis.z)
+                # glScalef(scale.x, scale.y, scale.z)
                 
                 mv = glGetDoublev(GL_MODELVIEW_MATRIX)
                 print("MV: ")
