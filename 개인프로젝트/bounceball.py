@@ -14,6 +14,7 @@ pygame.display.set_caption('바운스볼 게임')
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+YELLOW = (255,255,0)
 
 # 플레이어(공)의 초기 위치와 초기 속도 및 튀어오르는 속도 세팅
 class player:
@@ -21,7 +22,7 @@ class player:
         self.pos = [x,y]
         self.radius = 10
         self.velocity = [0, 0]
-        self.bouncing_velocity = -13
+        self.bouncing_velocity = -8
         self.rect = pygame.Rect(self.pos[0] - self.radius, self.pos[1] - self.radius, self.radius * 2, self.radius * 2)
     def updatecollider(self):
         self.rect = pygame.Rect(self.pos[0] - self.radius, self.pos[1] - self.radius, self.radius * 2, self.radius * 2)
@@ -34,6 +35,20 @@ class platform:
         self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
     def updatecollider(self):
         self.rect = pygame.Rect(self.pos[0], self.pos[1], self.width, self.height)
+    
+    def checkcollide(self, ball):
+        if self.rect.collidepoint(ball.rect.midright): # 왼쪽
+            ball.velocity[0] = -0.5
+        elif self.rect.collidepoint(ball.rect.midleft): # 오른쪽
+            ball.velocity[0] = 0.5
+        elif self.rect.collidepoint(ball.rect.midtop) or self.rect.collidepoint(ball.rect.topleft) or self.rect.collidepoint(ball.rect.topright): # 플랫폼 아래쪽에 부딪힐때
+            ball.pos[1] = self.rect.bottom + ball.radius
+            ball.velocity[1] = -ball.velocity[1]
+        elif self.rect.collidepoint(ball.rect.midbottom) or self.rect.collidepoint(ball.rect.bottomleft) or self.rect.collidepoint(ball.rect.bottomright): # 위쪽
+            ball.velocity[1] = ball.bouncing_velocity
+        
+            
+            
     # def checkcollide(self, ball):
     #     if ball.pos[0] + ball.radius >= self.rect.left and  ball.pos[0] - ball.radius <= self.rect.left: #플랫폼 왼쪽에 부딪힐 때
     #         ball.pos[0] = self.rect.left - ball.radius
@@ -44,28 +59,35 @@ class platform:
     #         ball.velocity[1] = -ball.velocity[1]
     #     elif ball.pos[0] - ball.radius <= self.rect.right and ball.pos[0] + ball.radius >= self.rect.right: # 플랫폼 오른쪽에 부딪힐 때
     #         ball.pos[0] = self.rect.right + ball.radius
-    def checkcollide(self, ball):
-        if self.rect.colliderect(ball.rect):
-            if ball.rect.right >= self.rect.left and ball.rect.left <= self.rect.left: #플랫폼 왼쪽에 부딪힐 때
-                ball.pos[0] = self.rect.left - ball.radius
-            elif ball.rect.left <= self.rect.right and ball.rect.right >= self.rect.right: # 플랫폼 오른쪽에 부딪힐 때
-                ball.pos[0] = self.rect.right + ball.radius    
-            elif ball.rect.bottom >= self.rect.top and ball.rect.top <= self.rect.top: # 플랫폼 위쪽에 부딪힐 때
-                ball.velocity[1] = ball.bouncing_velocity
-            elif ball.rect.top <= self.rect.bottom and ball.rect.bottom >= self.rect.bottom: # 플랫폼 아래쪽에 부딪힐 때
-                ball.pos[1] = self.rect.bottom + ball.radius
-                ball.velocity[1] = -ball.velocity[1]
+    
+    # def checkcollide(self, ball):
+    #     if self.rect.colliderect(ball.rect):
+    #         if ball.rect.bottom >= self.rect.top and ball.rect.top <= self.rect.top: # 플랫폼 위쪽에 부딪힐 때
+    #             ball.velocity[1] = ball.bouncing_velocity
+    #         elif ball.rect.top <= self.rect.bottom and ball.rect.bottom >= self.rect.bottom: # 플랫폼 아래쪽에 부딪힐 때
+    #             ball.pos[1] = self.rect.bottom + ball.radius
+    #             ball.velocity[1] = -ball.velocity[1]
+    #         elif ball.rect.right >= self.rect.left and ball.rect.left <= self.rect.left: #플랫폼 왼쪽에 부딪힐 때
+    #             ball.pos[0] = self.rect.left - ball.radius
+    #         elif ball.rect.left <= self.rect.right and ball.rect.right >= self.rect.right: # 플랫폼 오른쪽에 부딪힐 때
+    #             ball.pos[0] = self.rect.right + ball.radius    
+            
             
         
         
         
 # 플레이어 생성  
-ball = player(400,300)
+ball = player(110,450)
 # 플랫폼 생성
-ground1 = platform(600,500,20,50)
-ground2 = platform(550,500,50,20)
+# 플랫폼 사이 자연스러운 최대 길이차 = 140
+ground_list = [
+    platform(100,500,50,20),
+    platform(240,500,50,20),
+    platform(340,450,50,20)
+]
+
 # 중력 가속도 
-gravity = 0.9
+gravity = 0.6
 
 # 시간 설정
 clock = pygame.time.Clock()
@@ -74,31 +96,43 @@ FPS = 60  # 시간당 프레임
 # 게임 루프
 while True:
     clock.tick(FPS)  # 프레임 제한
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                ball.velocity[0] = -5
-            elif event.key == pygame.K_RIGHT:
-                ball.velocity[0] = 5
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
-                ball.velocity[0] = 0
-            elif event.key == pygame.K_RIGHT:
-                ball.velocity[0] = 0
+    
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        ball.velocity[0] = -4
+    if keys[pygame.K_RIGHT]:
+        ball.velocity[0] = 4
+    elif not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]:
+        ball.velocity[0] = 0
+        # if event.type == pygame.KEYDOWN: # 플레이어 키 입력
+        #     if event.key == pygame.K_LEFT:
+        #         ball.velocity[0] = -5
+        #     elif event.key == pygame.K_RIGHT:
+        #         ball.velocity[0] = 5
+        # elif event.type == pygame.KEYUP and ball.velocity[0] < 0:
+        #     if event.key == pygame.K_LEFT:
+        #         ball.velocity[0] = 0
+        # elif event.type == pygame.KEYUP and ball.velocity[0] > 0:
+        #     if event.key == pygame.K_RIGHT:
+        #         ball.velocity[0] = 0
 
     # 공에 중력 가하기
     ball.velocity[1] += gravity
     # 플랫폼과 플레이어(공)와의 콜리전 판정
-    ground1.checkcollide(ball)
-    ground2.checkcollide(ball)
+    for ground in ground_list:
+        ground.checkcollide(ball)
+
         
             
      # 공 움직이기
     ball.pos[0] += ball.velocity[0]
     ball.pos[1] += ball.velocity[1]
+    
   # 물체의 움직임에 따른 콜라이더 업데이트
     ball.updatecollider()
     
@@ -116,8 +150,8 @@ while True:
     screen.fill(WHITE)
 
     # 플랫폼 그리기
-    pygame.draw.rect(screen, GREEN, (int(ground1.pos[0]), int(ground1.pos[1]), ground1.width, ground1.height))
-    pygame.draw.rect(screen, GREEN, (int(ground2.pos[0]), int(ground2.pos[1]), ground2.width, ground2.height))
+    for ground in ground_list:
+        pygame.draw.rect(screen, GREEN, (int(ground.pos[0]), int(ground.pos[1]), ground.width, ground.height))
     # 공그리기
     pygame.draw.circle(screen, RED, (int(ball.pos[0]), int(ball.pos[1])), ball.radius)
     # 화면 업데이트하기
