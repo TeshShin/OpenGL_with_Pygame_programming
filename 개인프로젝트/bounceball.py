@@ -71,6 +71,7 @@ class star:
             return True
         else:
             return False
+
 class spike:
     def __init__(self, x, y):
         self.pos = [x,y]
@@ -133,8 +134,10 @@ star_list = [
 spike_list = []
 goals = 0
 # 다른 스테이지부터 로드하고 싶다면
-stage = 2 # 스테이지 숫자를 바꾸고 (초기 1)
+stage = 3 # 스테이지 숫자를 바꾸고 (초기 1)
 loadstage = True # 로드 스테이지를 True로 하면 된다. (초기 False)
+stageclear = False
+getendtime = False
 # 게임 루프
 while True:
     clock.tick(FPS)  # 프레임 제한
@@ -146,24 +149,78 @@ while True:
             ball.died = False
             goals = 0
             print('초기화')        
-            for star in star_list:
-                if star.touch: # 죽기 전에 먹은 별들 다시 초기화
-                    star.touch = False
-                    star.rect = Rect(0,0,20,20)
-                    star.rect.center = star.pos[0], star.pos[1]
+            for staridx in star_list:
+                if staridx.touch: # 죽기 전에 먹은 별들 다시 초기화
+                    staridx.touch = False
+                    staridx.rect = Rect(0,0,20,20)
+                    staridx.rect.center = staridx.pos[0], staridx.pos[1]
             
             
-    # 스테이지 1 종료
-    if (goals == len(star_list) and stage == 1 and not loadstage):
+    # 스테이지 클리어시 다음 스테이지로 가기전 약간의 딜레이를 위한 endtime 얻기
+    if (stageclear and not getendtime):
         endtime = pygame.time.get_ticks()
-        loadstage = True
+        getendtime = True # endtime을 얻었는가?
         print('종료중')
-    # 스테이지 2로 초기화
-    if (stage == 1 and loadstage):
+    # 딜레이가 끝나고 나면 다음 스테이지 로드
+    if (getendtime and stageclear):
         if(abs(pygame.time.get_ticks() - endtime) > 800):
             stage += 1
-    if (stage == 2 and loadstage): # 스테이지 2 맵세팅
+            print(stage)
+            loadstage = True
+            stageclear = False
+            getendtime = False
+    if (stage == 2 and loadstage): # 스테이지 2 맵으로 세팅
         ground_list.clear()
+        star_list.clear()
+        spike_list.clear()
+        goals = 0
+        ballinitx, ballinity = 400, 20
+        ball.pos = [ballinitx, ballinity]
+        ball.velocity = [0, 0]
+        ground_list = [
+            platform(400,110,20,20),
+            platform(400,210,20,20),
+            platform(400,310,20,20),
+            platform(400,410,20,20),
+            platform(400,510,20,20),
+        ]
+        star_list = [
+            star(400, 130),
+            star(400, 230),
+            star(400, 330),
+            star(400, 430),
+        ]
+        loadstage = False
+        
+    if (stage == 3 and loadstage): # 스테이지 3 맵으로 세팅
+        ground_list.clear()
+        star_list.clear()
+        spike_list.clear()
+        goals = 0
+        ballinitx, ballinity = 300, 20
+        ball.pos = [ballinitx, ballinity]
+        ball.velocity = [0, 0]
+        ground_list = [
+            platform(240,50,20,140),
+            platform(300,110,100,20),
+            platform(560,50,20,140),
+            platform(500,110,100,20),
+            
+            platform(340,360,20,500), # 두 기둥 사이 360~420
+            platform(460,360,20,500)
+            
+        ]
+        star_list = [
+            star(360, 500),
+            star(380, 400),
+            star(400, 300),
+            star(420, 200),
+        ]
+        loadstage = False
+        
+    if (stage == 4 and loadstage): # 스테이지 4 맵으로 세팅
+        ground_list.clear()
+        spike_list.clear()
         star_list.clear()
         goals = 0
         ballinitx, ballinity = 50, 20
@@ -189,7 +246,8 @@ while True:
             platform(470,400,60,20),
                        
         
-            platform(200,590,400,20)
+            platform(200,590,400,20),
+            platform(550,500,60,20)
         ]
         
         spike_list = [
@@ -205,15 +263,53 @@ while True:
             spike(350,120),
             spike(370,120),
             
+            spike(30,570),
+            spike(50,570),
+            spike(70,570),
+        ]
+        
+        star_list = [
+            star(100, 20),
+            star(190, 20),
+            star(340, 20),
             
-           
+            star(170, 180),
+            star(170, 160),
+            star(190, 180),
+            star(190, 160),
+            star(210, 180),
+            star(210, 160),
+            star(230, 180),
+            star(230, 160),
+            star(250, 180),
+            star(250, 160),
+            star(270, 180),
+            star(270, 160),
+            star(290, 180),
+            star(290, 160),
+            star(310, 180),
+            star(310, 160),
+            star(330, 180),
+            star(330, 160),
+            star(350, 180),
+            star(350, 160),
+            star(370, 180),
+            star(370, 160),
             
+            star(190, 240),
+            star(330, 240),
+            star(470, 360),
+            star(550, 480),
+            
+            star(50, 500)
         ]
         
         
         loadstage = False
-            
+        
     
+    
+        
     
             
     
@@ -252,16 +348,18 @@ while True:
 
         
     # 플랫폼과 플레이어(공)와의 콜리전 판정
-    for ground in ground_list:
-        ground.checkcollide(ball)
+    for groundidx in ground_list:
+        groundidx.checkcollide(ball)
     # 별과 플레이어와의 콜리전 판정
-    for star in star_list:
-        if star.checkcollide(ball):
+    for staridx in star_list:
+        if staridx.checkcollide(ball):
             goals += 1
             print('닿음')
+            if(goals == len(star_list)): # 모든 별을 먹으면 stageclear
+                stageclear = True
     # 가시와 플레이어와의 콜리전 판정
-    for spike in spike_list:
-        if spike.checkcollide(ball) and not ball.died:
+    for spikeidx in spike_list:
+        if spikeidx.checkcollide(ball) and not ball.died:
             diedtime = pygame.time.get_ticks()  # 리스폰까지의 딜레이를 위한 시간 측정
             ball.died = True
             print('가시 닿음')
@@ -286,16 +384,17 @@ while True:
     # 화면 클리어
     screen.fill(WHITE)
     # 플랫폼 그리기
-    for ground in ground_list:
-        pygame.draw.rect(screen, GREEN, ground.rect)
+    for groundidx in ground_list:
+        pygame.draw.rect(screen, GREEN, groundidx.rect)
         
     # 별 그리기
-    for star in star_list:
-        if not star.touch:
-            screen.blit(star.img, star.rect)
+    
+    for staridx in star_list:
+        if not staridx.touch:
+            screen.blit(staridx.img, staridx.rect)
     # 가시 그리기
-    for spike in spike_list:
-        screen.blit(spike.img, spike.rect)
+    for spikeidx in spike_list:
+        screen.blit(spikeidx.img, spikeidx.rect)
     
     # 공그리기
     if not ball.died:
