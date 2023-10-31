@@ -15,6 +15,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 YELLOW = (100,100,0)
+BLACK = (0,0,0)
 # 중력 가속도 
 gravity = 0.6
 # 시간 설정
@@ -85,59 +86,55 @@ class spike:
             return False
 
 # 플레이어 생성
-ballinitx, ballinity = 110, 450
+ballinitx, ballinity = 300, 250
 ball = player(ballinitx, ballinity)
 # 플랫폼 생성
 # 정사각형의 플랫폼(20,20) 사이 자연스러운 최대 길이차 = 100, 
 # 50 높은 곳은 (이전 플랫폼의 x좌표 + 이전 플랫폼의 너비 - 20 + 80)
 ground_list = [
-    platform(70,460,20,100), # 왼쪽 벽
-    platform(100,500,80,20), # 첫 바닥
-    platform(200,500,60,20),
-    platform(300,500,60,20),
-    platform(420,500,60,20),
-    platform(550,500,60,20),
-    platform(710,500,60,20),
-    platform(740,460,20,100),
-    
-    platform(100,80,20,100),
-    platform(130,80,40,20),
-    platform(160,80,20,100),    # H
-    
-    platform(220,80,20,100),
-    platform(260,80,60,20),
-    platform(260,40,60,20),
-    platform(260,120,60,20),    # E
-    
-    platform(340,80,20,100),
-    platform(380,120,60,20),    # L
-    
-    platform(460,80,20,100),
-    platform(500,120,60,20),    # L
-    
-    platform(580,80,20,100),
-    platform(620,120,80,20),
-    platform(650,80,20,100),
-    platform(620,40,80,20),     # O
-    
-    platform(700, 60,20,60),
-    platform(700, 120, 20, 20)  # !
+    platform(200,300,20,100), # 왼쪽 벽
+    platform(600,300,20,100), # 우측 벽
+    platform(400,360,420,20), # 바닥
     
     
+    platform(70,60,20,60),
+    platform(110,40,60,20),
+    platform(110,80,60,20),
+    platform(130,100,20,60),
+    platform(90,120,60,20),     # S
+    
+    platform(200,80,20,100),    # I
+    
+    platform(310,40,90,20), 
+    platform(270,80,20,100),
+    platform(310,80,20,100),
+    platform(350,80,20,100),    # M
+    
+    platform(410,80,20,100),
+    platform(440,40,60,20),
+    platform(440,80,60,20),
+    platform(480,60,20,60),     # P
+    
+    platform(540,80,20,100),
+    platform(580,120,60,20),    # L
+    
+    platform(670,80,20,100),
+    platform(710,80,60,20),
+    platform(710,40,60,20),
+    platform(710,120,60,20),    # E
 ]
 star_list = [
-    star(300,420),
-    star(420,420),
-    star(550,420),
-    star(720,420)
+    star(580,280)
 ]
 spike_list = []
 goals = 0
 # 다른 스테이지부터 로드하고 싶다면
-stage = 3 # 스테이지 숫자를 바꾸고 (초기 1)
+stage = 7 # 스테이지 숫자를 바꾸고 (초기 1)
 loadstage = True # 로드 스테이지를 True로 하면 된다. (초기 False)
 stageclear = False
 getendtime = False
+gameover = False
+playtime = 0
 # 게임 루프
 while True:
     clock.tick(FPS)  # 프레임 제한
@@ -169,13 +166,66 @@ while True:
             loadstage = True
             stageclear = False
             getendtime = False
-    if (stage == 2 and loadstage): # 스테이지 2 맵으로 세팅
+    if(stage == 2 and loadstage):    # 스테이지 2 맵으로 세팅
+        ground_list.clear()
+        star_list.clear()
+        spike_list.clear()
+        goals = 0
+        ballinitx, ballinity = 110, 450
+        ball.pos = [ballinitx, ballinity]
+        ball.updatecollider()
+        ball.velocity = [0, 0]
+        ground_list = [
+            platform(70,460,20,100), # 왼쪽 벽
+            platform(100,500,80,20), # 첫 바닥
+            platform(200,500,60,20),
+            platform(300,500,60,20),
+            platform(420,500,60,20),
+            platform(550,500,60,20),
+            platform(710,500,60,20),
+            platform(740,460,20,100),
+            
+            platform(100,80,20,100),
+            platform(130,80,40,20),
+            platform(160,80,20,100),    # H
+            
+            platform(220,80,20,100),
+            platform(260,80,60,20),
+            platform(260,40,60,20),
+            platform(260,120,60,20),    # E
+            
+            platform(340,80,20,100),
+            platform(380,120,60,20),    # L
+            
+            platform(460,80,20,100),
+            platform(500,120,60,20),    # L
+            
+            platform(580,80,20,100),
+            platform(620,120,80,20),
+            platform(650,80,20,100),
+            platform(620,40,80,20),     # O
+            
+            platform(700, 60,20,60),
+            platform(700, 120, 20, 20)  # ! 
+        ]
+        star_list = [
+            star(300,420),
+            star(420,420),
+            star(550,420),
+            star(720,420)
+        ]
+        loadstage = False
+    
+    
+    
+    if (stage == 3 and loadstage): 
         ground_list.clear()
         star_list.clear()
         spike_list.clear()
         goals = 0
         ballinitx, ballinity = 400, 20
         ball.pos = [ballinitx, ballinity]
+        ball.updatecollider()
         ball.velocity = [0, 0]
         ground_list = [
             platform(400,110,20,20),
@@ -192,13 +242,14 @@ while True:
         ]
         loadstage = False
         
-    if (stage == 3 and loadstage): # 스테이지 3 맵으로 세팅
+    if (stage == 4 and loadstage): 
         ground_list.clear()
         star_list.clear()
         spike_list.clear()
         goals = 0
         ballinitx, ballinity = 300, 20
         ball.pos = [ballinitx, ballinity]
+        ball.updatecollider()
         ball.velocity = [0, 0]
         ground_list = [
             platform(240,50,20,140),
@@ -211,20 +262,105 @@ while True:
             
         ]
         star_list = [
-            star(360, 500),
-            star(380, 400),
-            star(400, 300),
-            star(420, 200),
+            star(440, 110),
+            star(430, 130),
+            star(420, 150),
+            star(410, 170),
+            star(400, 190),
+            star(390, 210),
+            star(380, 230),
+            star(370, 250),
+            star(360, 270),
+            star(370, 290),
+            star(380, 310),
+            star(390, 330),
+            star(400, 350),
+            star(410, 370),
+            star(420, 390),
+            star(410, 410),
+            star(400, 430),
+            star(390, 450),
+            star(380, 470),
+            star(370, 490),
+            star(360, 510),
+            star(370, 530),
+            star(380, 550),
+            star(390, 570),
+            star(400, 590),
         ]
         loadstage = False
         
-    if (stage == 4 and loadstage): # 스테이지 4 맵으로 세팅
+        
+    if(stage == 5 and loadstage):
+        ground_list.clear()
+        star_list.clear()
+        spike_list.clear()
+        goals = 0
+        ballinitx, ballinity = 50, 480
+        ball.pos = [ballinitx, ballinity]
+        ball.updatecollider()
+        ball.velocity = [0, 0]
+        ground_list = [
+            platform(50,550,40,20),
+            platform(140,550,20,20),
+            platform(240,550,20,20),
+            platform(320,550,20,20),
+            platform(390,520,20,20),
+            platform(460,500,20,20),
+            platform(530,480,20,20),
+            platform(630,460,20,20),
+            platform(650,410,20,20),
+            platform(670,360,20,20),
+            platform(650,300,20,20),
+            platform(630,240,20,20),
+            platform(520,230,20,20),
+            platform(410,220,20,20),
+            platform(290,230,20,20),
+            platform(180,190,20,20),
+            platform(160,130,20,20), # 두 갈림길
+            
+            platform(50,120,20,20),
+            
+            platform(270,120,20,20),
+            
+            platform(600,90,500,20),
+            platform(700,40,200,80),
+        ]
+        star_list = [
+            star(140,530),
+            star(240,530),
+            star(320,530),
+            star(390,500),
+            star(460,480),
+            star(530,460),
+            star(630,440),
+            star(650,390),
+            star(670,340),
+            star(650,280),
+            star(630,220),
+            star(520,210),
+            star(410,200),
+            star(290,210),
+            star(180,170),
+            star(160,110),
+            star(50,100),
+            star(270,100),
+            star(590,70)
+        ]
+        spike_list = [
+            spike(500,10)
+        ]
+        spike_list[0].img = pygame.transform.flip(spike_list[0].img, False, True)
+        loadstage = False
+        
+    if (stage == 6 and loadstage): # 마지막 스테이지
         ground_list.clear()
         spike_list.clear()
         star_list.clear()
         goals = 0
         ballinitx, ballinity = 50, 20
         ball.pos = [ballinitx, ballinity]
+        ball.updatecollider()
         ball.velocity = [0, 0]
         ground_list = [
             platform(10,300,20,600),
@@ -244,10 +380,10 @@ while True:
             platform(330,300,60,20),
             
             platform(470,400,60,20),
-                       
-        
-            platform(200,590,400,20),
-            platform(550,500,60,20)
+            
+            platform(550,500,60,20),
+            platform(700,510,100,20),
+            platform(200,590,400,20)
         ]
         
         spike_list = [
@@ -300,16 +436,87 @@ while True:
             star(330, 240),
             star(470, 360),
             star(550, 480),
-            
+            star(700, 490),
             star(50, 500)
         ]
         
         
         loadstage = False
         
-    
-    
-        
+    if(stage == 7 and loadstage): # 스테이지 종료
+        playtime = pygame.time.get_ticks() - playtime # playtime을 재시작할 때 다시 설정해주어야함.
+        gameover = True
+        while(gameover):
+            screen.fill(BLACK)
+            showtime = pygame.font.SysFont('comicsans', 30).render("Your PlayTime: " + str(playtime / 1000), True, WHITE)
+            showtimerect = showtime.get_rect()
+            showtimerect.center = (400, 200)
+            selectgame = pygame.font.SysFont('comicsans', 25).render("Press R key to restart game or Press Q key to quit game", True, WHITE)
+            selectgamerect = selectgame.get_rect()
+            selectgamerect.center = (400, 300)
+            screen.blit(showtime, showtimerect)
+            screen.blit(selectgame, selectgamerect)
+            pygame.display.update()
+            
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q: # 끄기
+                        pygame.quit()
+                        sys.exit()
+                    if event.key == pygame.K_r: # 재시작
+                        ground_list.clear()
+                        star_list.clear()
+                        spike_list.clear()
+                        goals = 0
+                        ballinitx, ballinity = 300, 250
+                        ball.pos = [ballinitx, ballinity]
+                        ball.updatecollider()
+                        ball.velocity = [0, 0]
+                        ground_list = [               # 스테이지 1로 초기화한다.
+                            platform(200,300,20,100), # 왼쪽 벽
+                            platform(600,300,20,100), # 우측 벽
+                            platform(400,360,420,20), # 바닥
+                            
+                            
+                            platform(70,60,20,60),
+                            platform(110,40,60,20),
+                            platform(110,80,60,20),
+                            platform(130,100,20,60),
+                            platform(90,120,60,20),     # S
+                            
+                            platform(200,80,20,100),    # I
+                            
+                            platform(310,40,90,20), 
+                            platform(270,80,20,100),
+                            platform(310,80,20,100),
+                            platform(350,80,20,100),    # M
+                            
+                            platform(410,80,20,100),
+                            platform(440,40,60,20),
+                            platform(440,80,60,20),
+                            platform(480,60,20,60),     # P
+                            
+                            platform(540,80,20,100),
+                            platform(580,120,60,20),    # L
+                            
+                            platform(670,80,20,100),
+                            platform(710,80,60,20),
+                            platform(710,40,60,20),
+                            platform(710,120,60,20),    # E
+                        ]
+                        star_list = [
+                            star(580,280)
+                        ]
+                        spike_list = []
+                        goals = 0
+                        stage = 1
+                        loadstage = False
+                        stageclear = False
+                        getendtime = False
+                        playtime = pygame.time.get_ticks()
+                        gameover = False
+                        
+
     
             
     
