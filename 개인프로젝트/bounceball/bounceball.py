@@ -457,10 +457,13 @@ while True:
             screen.blit(showtime, showtimerect)
             screen.blit(selectgame, selectgamerect)
             pygame.display.update()
-            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q or event.type == pygame.QUIT: # 끄기
+                    if event.key == pygame.K_q: # 끄기
                         pygame.quit()
                         sys.exit()
                     if event.key == pygame.K_r: # 재시작
