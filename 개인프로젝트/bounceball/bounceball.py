@@ -25,14 +25,14 @@ FPS = 60  # 시간당 프레임
 # 플레이어(공)의 초기 위치와 초기 속도 및 튀어오르는 속도 세팅
 class player:
     def __init__(self, x, y):
-        self.died = False
-        self.pos = [x,y]
-        self.radius = 10
-        self.velocity = [0, 0]
-        self.bouncing_velocity = -8
-        self.rect = pygame.Rect(0, 0, self.radius * 2, self.radius * 2)
-        self.rect.center = (x,y)
-    def updatecollider(self):
+        self.died = False   # 플레이어가 사망했는지
+        self.pos = [x,y]    # 플레이어의 위치
+        self.radius = 10    # 플레이어(공)의 반지름
+        self.velocity = [0, 0]      # 초기 속도
+        self.bouncing_velocity = -8     # 튀어오르는 속도
+        self.rect = pygame.Rect(0, 0, self.radius * 2, self.radius * 2)     # 플레이어의 사각충돌체
+        self.rect.center = (x,y)    # 충돌체 위치 설정
+    def updatecollider(self):   # 공의 움직임에 따른 충돌체 위치 설정
         self.rect.center = (self.pos[0], self.pos[1])
     
 
@@ -44,26 +44,25 @@ class platform:
         self.width = width
         self.height = height
         
-        
-    def checkcollide(self, ball):
-        if self.rect.collidepoint(ball.rect.midright): # 플랫폼 왼쪽에 부딪힐때
+    def checkcollide(self, ball):   # 공과의 충돌 판정하고 플랫폼의 어디에 부딪쳤냐에 따른 실행
+        if self.rect.collidepoint(ball.rect.midright): # 플랫폼 왼쪽에 부딪칠때
             ball.velocity[0] = -0.5
-        elif self.rect.collidepoint(ball.rect.midleft): # 플랫폼 오른쪽에 부딪힐때
+        elif self.rect.collidepoint(ball.rect.midleft): # 플랫폼 오른쪽에 부딪칠때
             ball.velocity[0] = 0.5
-        elif self.rect.collidepoint(ball.rect.midtop) or self.rect.collidepoint(ball.rect.topleft) or self.rect.collidepoint(ball.rect.topright): # 플랫폼 아래쪽에 부딪힐때
+        elif self.rect.collidepoint(ball.rect.midtop) or self.rect.collidepoint(ball.rect.topleft) or self.rect.collidepoint(ball.rect.topright): # 플랫폼 아래쪽에 부딪칠때
             ball.pos[1] = self.rect.bottom + ball.radius
             if (ball.velocity[1] < 0):
                 ball.velocity[1] = -ball.velocity[1]
-        elif self.rect.collidepoint(ball.rect.midbottom) or self.rect.collidepoint(ball.rect.bottomleft) or self.rect.collidepoint(ball.rect.bottomright): # 플랫폼 위쪽에 부딪힐때
+        elif self.rect.collidepoint(ball.rect.midbottom) or self.rect.collidepoint(ball.rect.bottomleft) or self.rect.collidepoint(ball.rect.bottomright): # 플랫폼 위쪽에 부딪칠때
             ball.velocity[1] = ball.bouncing_velocity
            
 class star:
     def __init__(self, x, y):
         self.pos = [x,y]
-        self.img = pygame.image.load('star.png')
-        self.rect = self.img.get_rect()
-        self.rect.center = (x, y)
-        self.touch = False
+        self.img = pygame.image.load('star.png')    # 별 이미지 로드
+        self.rect = self.img.get_rect()     # 이미지에 따른 충돌체 설정
+        self.rect.center = (x, y)   # 중심점 기준 좌표로 위치 세팅
+        self.touch = False  # 플레이어가 먹었다면
         
     def checkcollide(self, ball):
         if self.rect.colliderect(ball.rect):
@@ -73,7 +72,7 @@ class star:
         else:
             return False
 
-class spike:
+class spike:        # 가시
     def __init__(self, x, y):
         self.pos = [x,y]
         self.img = pygame.image.load('spike.png')
@@ -127,12 +126,12 @@ star_list = [
     star(580,280)
 ]
 spike_list = []
-goals = 0
+goals = 0   # 별을 먹은 개수
 # 다른 스테이지부터 로드하고 싶다면
 stage = 1 # 스테이지 숫자를 바꾸고 (초기 1)
 loadstage = False # 로드 스테이지를 True로 하면 된다. (초기 False)
-stageclear = False
-getendtime = False
+stageclear = False  # 스테이지를 클리어했는지?
+getendtime = False  # 스테이지를 클리어할때 시간을 구했는지?(다음 스테이지로 가기전 딜레이를 위한 것)
 gameover = False
 playtime = 0
 # 게임 루프
@@ -518,11 +517,6 @@ while True:
                         getendtime = False
                         playtime = pygame.time.get_ticks()
                         gameover = False
-                        
-
-    
-            
-    
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
