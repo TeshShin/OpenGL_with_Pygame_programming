@@ -523,7 +523,7 @@ while True:
             pygame.quit()
             sys.exit()
     
-    keys = pygame.key.get_pressed()     # 반대방향을 눌렀을 때 바로 방향이 변하고, 다른 키를 뗐을때 공이 멈추지 않도록
+    keys = pygame.key.get_pressed()     # 동시에 두 개의 키를 누르고, 다른 키를 뗐을때 공이 멈추지 않도록
     if keys[pygame.K_LEFT]:             # 하기 위해서 pressed를 사용
         ball.velocity[0] = -4
     if keys[pygame.K_RIGHT]:
