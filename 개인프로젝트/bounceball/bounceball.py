@@ -523,8 +523,8 @@ while True:
             pygame.quit()
             sys.exit()
     
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
+    keys = pygame.key.get_pressed()     # 반대방향을 눌렀을 때 바로 방향이 변하고, 다른 키를 뗐을때 공이 멈추지 않도록
+    if keys[pygame.K_LEFT]:             # 하기 위해서 pressed를 사용
         ball.velocity[0] = -4
     if keys[pygame.K_RIGHT]:
         ball.velocity[0] = 4
@@ -575,9 +575,6 @@ while True:
         ball.pos[1] += ball.velocity[1]
         # 물체의 움직임에 따른 콜라이더 업데이트
         ball.updatecollider()
-    
-    
-    
     
     # 화면 가장자리와 공의 콜리젼
     # 플레이어가 화면 바깥으로 나가면 죽음
