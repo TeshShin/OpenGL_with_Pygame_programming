@@ -129,8 +129,8 @@ star_list = [
 spike_list = []
 goals = 0
 # 다른 스테이지부터 로드하고 싶다면
-stage = 7 # 스테이지 숫자를 바꾸고 (초기 1)
-loadstage = True # 로드 스테이지를 True로 하면 된다. (초기 False)
+stage = 1 # 스테이지 숫자를 바꾸고 (초기 1)
+loadstage = False # 로드 스테이지를 True로 하면 된다. (초기 False)
 stageclear = False
 getendtime = False
 gameover = False
@@ -450,8 +450,8 @@ while True:
             screen.fill(BLACK)
             showtime = pygame.font.SysFont('comicsans', 30).render("Your PlayTime: " + str(playtime / 1000), True, WHITE)
             showtimerect = showtime.get_rect()
-            showtimerect.center = (400, 200)
-            selectgame = pygame.font.SysFont('comicsans', 25).render("Press R key to restart game or Press Q key to quit game", True, WHITE)
+            showtimerect.center = (400, 250)
+            selectgame = pygame.font.SysFont('comicsans', 20).render("Press R key to restart game or Press Q key to quit game", True, WHITE)
             selectgamerect = selectgame.get_rect()
             selectgamerect.center = (400, 300)
             screen.blit(showtime, showtimerect)
