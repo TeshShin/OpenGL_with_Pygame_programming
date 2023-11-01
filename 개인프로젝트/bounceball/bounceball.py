@@ -447,7 +447,7 @@ while True:
         gameover = True
         while(gameover):
             screen.fill(BLACK)
-            showtime = pygame.font.SysFont('comicsans', 30).render("Your PlayTime: " + str(playtime / 1000), True, WHITE)
+            showtime = pygame.font.SysFont('comicsans', 30).render("Your PlayTime: " + str(playtime / 1000)+"sec", True, WHITE)
             showtimerect = showtime.get_rect()
             showtimerect.center = (400, 250)
             selectgame = pygame.font.SysFont('comicsans', 20).render("Press R key to restart game or Press Q key to quit game", True, WHITE)
