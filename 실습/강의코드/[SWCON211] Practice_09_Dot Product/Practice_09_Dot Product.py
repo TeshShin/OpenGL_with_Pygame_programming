@@ -35,8 +35,9 @@ def calculate_playerToTarget(playerToTarget,norm_playerToTarget):
 # ========== new =============
 def angle_between_vectors(norm_v, norm_f):
 
-    # 두 벡터의 내적
-    # 코사인 역함수로 각도 계산
+    dot_product = norm_v[0] * norm_f[0] + norm_v[1] * norm_f[1] # 두 벡터의 내적
+    # dot_product = np.dot(norm_v, norm_f)
+    angle = np.arccos(dot_product) # 코사인 역함수로 각도 계산
     angle = angle * 180 / math.pi   # 라디안으로 각도 계산   
     return angle
 # ========== new =============
@@ -112,6 +113,9 @@ while not done:
         # Write codes for rotating player
         # Rotate PlayerViewVector using rotation(posX,posY,angle)	
         # Rotate dir1 & dir2 (visualizing the sight of a player)  
+        playerViewVector = rotation(playerViewVector[0], playerViewVector[1], theta)
+        dir1 = rotation(dir1[0],dir1[1], theta)
+        dir2 = rotation(dir2[0], dir2[1], theta)
 #################
     if left_p:
         playerPosition[0] -= 1
