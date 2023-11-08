@@ -27,7 +27,7 @@ glMaterial(GL_FRONT, GL_DIFFUSE, (0, 1, 0, 1))
 glEnable(GL_LIGHT0)
 
 # Change path name to suit your directory structure
-mesh = Cube(GL_POLYGON, "wall.jpg")
+mesh = Cube(GL_POLYGON, "wall.jpg") # draw type을 폴리곤으로 설정
 
 while not done:
     for event in pygame.event.get():
