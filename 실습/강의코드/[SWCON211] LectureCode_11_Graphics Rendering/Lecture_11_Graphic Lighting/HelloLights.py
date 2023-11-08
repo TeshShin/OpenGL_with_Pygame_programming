@@ -25,6 +25,9 @@ glLightfv(GL_LIGHT0, GL_SPECULAR, (0, 1, 0, 1))
 
 glEnable(GL_LIGHT0)
 
+# glLight(GL_LIGHT1, GL_POSITION, (1,0,0,1))
+# glLight(GL_LIGHT1, GL_DIFFUSE, (0,0,1,1))
+# glEnable(GL_LIGHT1)
 # Change path name to suit your directory structure
 mesh = Cube()
 
