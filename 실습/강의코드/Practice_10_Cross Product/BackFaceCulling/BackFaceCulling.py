@@ -19,7 +19,7 @@ objects_3d = []
 
 cube = Object("Cube")
 cube.add_component(Transform())
-cube.add_component(Cube(GL_LINE_LOOP, back_face_cull=True))
+cube.add_component(Cube(GL_LINE_LOOP, back_face_cull=True)) # False시, 폴리곤 다보임. back face cull이 안되므로
 
 
 camera = Camera(60, (screen_width / screen_height), 0.1, 1000.0)

@@ -2,7 +2,7 @@ import pygame
 import math
 import numpy as np
 
-
+# np.dot이랑 @은 매트릭스 곱임.
 class Transform:
     def __init__(self):
         self.MVM = np.identity(4)
