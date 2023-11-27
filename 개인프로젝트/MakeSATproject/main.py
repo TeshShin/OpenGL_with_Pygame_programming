@@ -15,10 +15,19 @@ FPS = 60 # 시간 당 프레임
 # 색상 정의
 white = (255, 255, 255)
 red = (255, 0, 0)
+green = (0, 255, 0)
+black = (0,0,0)
 
 # 다각형 정점 좌표
 polygon1 = [[100, 100], [200, 100], [150, 200]]
-polygon2 = [[300, 150], [400, 150], [350, 250]]
+polygon2 = [[300, 150], [400, 150], [350, 250], [300, 200]]
+
+def transform_coordinates(x, y, screen_width, screen_height):
+    center_x = screen_width // 2
+    center_y = screen_height // 2
+    transformed_x = x - center_x
+    transformed_y = y - center_y
+    return transformed_x, transformed_y
 
 def project_polygon(axis, polygon):
     """다각형을 축에 사영한 결과를 반환합니다."""
@@ -33,7 +42,7 @@ def project_polygon(axis, polygon):
     return min_proj, max_proj
 
 def get_axes(polygon):
-    """다각형의 변에 대한 축을 반환합니다."""
+    """다각형의 변에 대한 노말축을 반환합니다."""
     axes = []
     for i in range(len(polygon)):
         point1 = polygon[i]
@@ -43,7 +52,7 @@ def get_axes(polygon):
         length = math.sqrt(normal[0]**2 + normal[1]**2)
         axis = [normal[0] / length, normal[1] / length]
         axes.append(axis)
-
+    
     return axes
 
 def check_collision(polygon1, polygon2):
@@ -59,6 +68,32 @@ def check_collision(polygon1, polygon2):
             return False
 
     return True
+
+def draw_axis(polygon):
+    axes = get_axes(polygon)
+    for axis in axes:
+        x = width / 2
+        y = height / 2
+        x1 = (axis[0]* 1000 + x) 
+        y1 = (axis[1]* 1000 + y) 
+        x2 = (axis[0]* -1000 + x) 
+        y2 = (axis[1]* -1000 + y)
+        
+        min_proj , max_proj = project_polygon(axis, polygon)
+        print(min_proj)
+        proj_x1 = (axis[0]* min_proj + x)
+        proj_y1 = (axis[1]* min_proj + y)
+        proj_x2 = (axis[0]* max_proj + x)
+        proj_y2 = (axis[1]* max_proj + y)
+        pygame.draw.aaline(screen, black, [x1, y1], [x2, y2])
+        pygame.draw.aaline(screen, green, [proj_x1, proj_y1], [proj_x2, proj_y2])
+
+def draw_neworigin_polygon(polygon, color = green):
+    newpolygon = []
+    for point in polygon:
+        newpolygon.append([point[0] + width / 2, point[1] + height / 2])
+    pygame.draw.polygon(screen, color, newpolygon)
+    
 
 # 게임 루프
 while True:
@@ -86,13 +121,15 @@ while True:
 
     # 화면 그리기
     screen.fill(white)
-    pygame.draw.polygon(screen, red, polygon1)
-    pygame.draw.polygon(screen, red, polygon2)
-
+    # pygame.draw.polygon(screen, green, polygon1)
+    # pygame.draw.polygon(screen, green, polygon2)
+    draw_neworigin_polygon(polygon1)
+    draw_neworigin_polygon(polygon2)
+    draw_axis(polygon1)
     # 충돌 시 색상 변경
     if collision:
-        pygame.draw.polygon(screen, (0, 255, 0), polygon1)
-        pygame.draw.polygon(screen, (0, 255, 0), polygon2)
+        draw_neworigin_polygon(polygon1, red)
+        draw_neworigin_polygon(polygon2, red)
 
     pygame.display.flip()
 
@@ -106,3 +143,6 @@ pygame.quit()
 
 # 각 노말축을 보이게하고 충돌한 길이에 대해선 색이 다르게 해서 충돌 했을 때 모든 축에 충돌한
 # 부분이 있는지 보여주는 기능이 있으면 좋겠음.
+
+
+# 11-27 도형들의 원점기준을 바꿔서 하는게 아닌 새로 생성한 축에 대한 투영을 해보기
