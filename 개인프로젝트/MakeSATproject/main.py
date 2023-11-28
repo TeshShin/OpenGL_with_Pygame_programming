@@ -68,35 +68,7 @@ def check_collision(polygon1, polygon2):
 
 def draw_SAT(polygon1, polygon2):
     """두 다각형의 각 선의 직교 벡터를 화면 중앙을 원점으로 시각화"""
-    axes = get_axes(polygon1)
-    for axis in axes:
-        x1 = (axis[0]* 1000 + originx) 
-        y1 = (axis[1]* 1000 + originy) 
-        x2 = (axis[0]* -1000 + originx) 
-        y2 = (axis[1]* -1000 + originy)
-        pygame.draw.aaline(screen, black, [x1, y1], [x2, y2])
-        """두 다각형이 축에 내적된 결과인 선을 시각화"""
-        min_proj1 , max_proj1 = project_polygon(axis, polygon1)
-        proj1_x1 = (axis[0]* min_proj1 + originx)
-        proj1_y1 = (axis[1]* min_proj1 + originy)
-        proj1_x2 = (axis[0]* max_proj1 + originx)
-        proj1_y2 = (axis[1]* max_proj1 + originy)
-        
-        min_proj2 , max_proj2 = project_polygon(axis, polygon2)
-        proj2_x1 = (axis[0]* min_proj2 + originx)
-        proj2_y1 = (axis[1]* min_proj2 + originy)
-        proj2_x2 = (axis[0]* max_proj2 + originx)
-        proj2_y2 = (axis[1]* max_proj2 + originy)
-        # 선끼리의 충돌 판정
-        if max_proj1 < min_proj2 or max_proj2 < min_proj1:
-            # 내적된 선이 서로 충돌하지 않으면 초록색
-            pygame.draw.line(screen, green, [proj1_x1, proj1_y1], [proj1_x2, proj1_y2],5)
-            pygame.draw.line(screen, green, [proj2_x1, proj2_y1], [proj2_x2, proj2_y2],5)
-        else:
-            # 충돌하면 빨간색
-            pygame.draw.line(screen, red, [proj1_x1, proj1_y1], [proj1_x2, proj1_y2],5)
-            pygame.draw.line(screen, red, [proj2_x1, proj2_y1], [proj2_x2, proj2_y2],5)
-    axes = get_axes(polygon2)
+    axes = get_axes(polygon1) + get_axes(polygon2)
     for axis in axes:
         x1 = (axis[0]* 1000 + originx) 
         y1 = (axis[1]* 1000 + originy) 
@@ -128,7 +100,7 @@ def draw_SAT(polygon1, polygon2):
 def draw_neworigin_polygon(polygon, color = green):
     newpolygon = []
     for point in polygon:
-        newpolygon.append([point[0] + width / 2, point[1] + height / 2])
+        newpolygon.append([point[0] + originx, point[1] + originy])
     pygame.draw.polygon(screen, color, newpolygon)
     
 
