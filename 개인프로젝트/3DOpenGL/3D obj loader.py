@@ -1,9 +1,8 @@
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
-from OpenGL.GLUT import *
 from OpenGL.GLU import *
-import numpy as np
+
 
 # OBJ 파일을 읽어서 정점, 면, 텍스처 좌표, 법선 벡터 정보를 추출하는 함수
 def load_obj(file_path):
@@ -33,26 +32,12 @@ def load_obj(file_path):
                     if len(vertex_data) >= 3 and vertex_data[2]:
                         normal.append(int(vertex_data[2]))
                 faces.append([face, texture_coord, normal])
-    print(vertices)
     return vertices, faces, texture_coords, normals
-# OBJ 파일에서 정점과 면에서의 정점의 인덱스만 가져오는 함수
-def load_obj_vandf(filename):
-    vertices = []
-    faces = []
-
-    with open(filename, 'r') as file:
-        for line in file:
-            if line.startswith('v '):
-                vertices.append(list(map(float, line[2:].split())))
-            elif line.startswith('f '): # f 의 값들 중에서 v 인덱스만 필요하므로 /기준으로 split한 리스트에서 0번째만 가져온다.
-                faces.append([int(vertex.split('/')[0]) for vertex in line[2:].split()])
-
-    return vertices, faces
 
 # 텍스처를 로드하는 함수
 def load_texture(texture_path):
     texture_surface = pygame.image.load(texture_path)
-    texture_data = pygame.image.tostring(texture_surface, 'RGBA', 1)
+    texture_data = pygame.image.tostring(texture_surface, 'RGBA', 1) # 이미지를 바이트 버퍼로
 
     texture_id = glGenTextures(1) #  텍스처 이름을 생성.(사용할 텍스처는 하나이므로 1)
     glBindTexture(GL_TEXTURE_2D, texture_id) # 사용하려는 텍스처를 GL_TEXTURE_2D에 바인딩. = (이후에 GL_TEXTURE_2D에 세팅되는 것들이 texture_id에 적용됨.)
@@ -60,8 +45,8 @@ def load_texture(texture_path):
                  GL_RGBA, GL_UNSIGNED_BYTE, texture_data)
     # 2차원 텍스처 이미지를 지정하는 함수. 각 매개변수에 알맞도록.
 
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) # 텍스처화되는 픽셀이 하나의 텍스처 요소보다 작거나 같은 영역에 매핑될 때 사용됩니다.
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) # 텍스처 축소 함수는 텍스처 처리 중인 픽셀이 텍스처 요소보다 큰 영역에 매핑될 때마다 사용된다.
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) # 텍스처화되는 픽셀이 하나의 텍스처 요소보다 작거나 같은 영역에 매핑될 때 사용된다.
 
     return texture_id
 
@@ -78,7 +63,7 @@ def draw_textured_obj(vertices, faces, texture_coords, normals, texture_id):
             normal = normals[face[2][i] - 1]
             # 현재 텍스처가 활성화 되어있으므로 glTexCoord2fv로 현재 텍스처 좌표를 설정한다.
             glTexCoord2fv(texture_coord)
-            glNormal3fv(normal)
+            #glNormal3fv(normal)
             glVertex3fv(vertex)
     glEnd()
     glDisable(GL_TEXTURE_2D)
@@ -87,7 +72,7 @@ def draw_textured_obj(vertices, faces, texture_coords, normals, texture_id):
 def draw_obj(vertices, faces):
     glBegin(GL_TRIANGLES)
     for face in faces:
-        for vertex_index in face: # 한 face엔 3개의 vertex_index가 있으므로, GL_TRIANGLES에 맞게 3번씩 glVertex3fv함.
+        for vertex_index in face[0]: # 한 face엔 3개의 vertex_index가 있으므로, GL_TRIANGLES에 맞게 3번씩 glVertex3fv함.
             vertex = vertices[vertex_index - 1]
             glVertex3fv(vertex)
     glEnd()
@@ -96,7 +81,7 @@ def draw_obj(vertices, faces):
 pygame.init()
 display = (800, 600)
 pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-
+pygame.display.set_caption("3D Obj load & Display")
 # 카메라 및 뷰포트 설정
 gluPerspective(45, (display[0] / display[1]), 0.1, 200.0)
 glTranslatef(0.0, 0.0, -50)
@@ -109,7 +94,7 @@ second_obj_file_path = 'teapot.obj'
 # OBJ 파일 로드
 first_vertices, first_faces, first_texture_coords, first_normals = load_obj(first_obj_file_path)
 
-second_vertices, second_faces = load_obj_vandf(second_obj_file_path)
+second_vertices, second_faces, _, _ = load_obj(second_obj_file_path)
 # 텍스처 로드
 texture_id = load_texture(texture_file_path)
 
@@ -124,14 +109,14 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            quit()
+            sys.exit()
 
     glEnable(GL_DEPTH_TEST)  # 깊이 테스트 활성화
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     # 여러 개의 모델에 원하는 transform을 위한 push&pop
     glPushMatrix()
     glRotatef(rotation_angle1, -1, 1, 0)  # 첫 번째 모델 회전
-    glTranslatef(10.0, 10.0, 0.0)  # 두 번째 모델의 위치 조정
+    glTranslatef(10.0, 10.0, 0.0)  # 첫 번째 모델의 위치 조정
     glRotatef(rotation_angle2, 3, 1, 1)  # 첫 번째 모델 회전
     draw_textured_obj(first_vertices, first_faces, first_texture_coords, first_normals, texture_id)
     glPopMatrix()
