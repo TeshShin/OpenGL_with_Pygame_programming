@@ -120,6 +120,7 @@ rotation_angle2 = 0
 
 # 메인 루프
 while True:
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -137,7 +138,7 @@ while True:
 
     
     glPushMatrix()
-    glRotatef(rotation_angle1, 3, 1, 1)  # 두 번째 모델 회전
+    glRotatef(rotation_angle2, 3, 1, 1)  # 두 번째 모델 회전
     glScalef(0.3,0.3,0.3)
     draw_obj(second_vertices, second_faces)
     glPopMatrix()
