@@ -1,4 +1,5 @@
 import pygame
+import sys
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -53,6 +54,7 @@ def load_texture(texture_path):
 # OBJ 파일의 정점, 면, 텍스처 좌표, 법선 벡터 정보를 사용하여 모델을 그리는 함수
 def draw_textured_obj(vertices, faces, texture_coords, normals, texture_id):
     glEnable(GL_TEXTURE_2D) # 텍스처를 적용할 수 있도록 GL_TEXTURE_2D 활성화
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL) # 텍스처 환경 매개 변수 설정
     glBindTexture(GL_TEXTURE_2D, texture_id) # GL_TEXTURE_2D에 texture_id 바인딩
 
     glBegin(GL_TRIANGLES)
