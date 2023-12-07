@@ -65,7 +65,7 @@ def draw_textured_obj(vertices, faces, texture_coords, normals, texture_id):
             normal = normals[face[2][i] - 1]
             # 현재 텍스처가 활성화 되어있으므로 glTexCoord2fv로 현재 텍스처 좌표를 설정한다.
             glTexCoord2fv(texture_coord)
-            #glNormal3fv(normal)
+            glNormal3fv(normal)
             glVertex3fv(vertex)
     glEnd()
     glDisable(GL_TEXTURE_2D)
